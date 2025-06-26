@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Internet Speed & Network Info</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    body {
+      background: linear-gradient(135deg, #1f4037, #99f2c8);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      text-align: center;
+    }
+    .container {
+      background: rgba(0,0,0,0.4);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease;
+    }
+    .container:hover {
+      transform: scale(1.02);
+    }
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+    .info {
+      margin: 10px 0;
+      font-size: 1.1rem;
+    }
+    .speed {
+      font-size: 3rem;
+      font-weight: bold;
+      margin: 20px 0;
+      animation: pulse 1.5s infinite;
+    }
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+      100% { transform: scale(1); }
+    }
+    button {
+      background-color: #00c9a7;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-size: 1rem;
+      color: #fff;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background-color: #00b091;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🌐 Internet Speed & Network Info</h1>
+    <div class="speed" id="speed">Checking...</div>
+    <div class="info" id="ip">IP Address: Loading...</div>
+    <div class="info" id="location">Location: Loading...</div>
+    <div class="info" id="network">Network Name: Loading...</div>
+    <button onclick="startSpeedTest()">🔁 Retest</button>
+  </div>
+
+  <script>
+    async function getNetworkInfo() {
+      try {
+        const res = await fetch('https://ipapi.co/json/');
+        const data = await res.json();
+        document.getElementById('ip').textContent = `IP Address: ${data.ip}`;
+        document.getElementById('location').textContent = `Location: ${data.city}, ${data.region}, ${data.country_name}`;
+        document.getElementById('network').textContent = `Network Name: ${data.org}`;
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function startSpeedTest() {
+      const speedText = document.getElementById('speed');
+      speedText.textContent = 'Testing...';
+
+      const image = new Image();
+      const startTime = new Date().getTime();
+
+      image.onload = () => {
+        const endTime = new Date().getTime();
+        const duration = (endTime - startTime) / 1000;
+        const imageSize = 500000; // ~500 KB image
+        const speedBps = (imageSize * 8) / duration;
+        const speedMbps = (speedBps / (1024 * 1024)).toFixed(2);
+        speedText.textContent = `${speedMbps} Mbps`;
+      };
+
+      image.onerror = () => {
+        speedText.textContent = 'Error testing speed';
+      };
+
+      image.src = 'https://upload.wikimedia.org/wikipedia/commons/3/3f/Fronalpstock_big.jpg?t=' + Math.random();
+    }
+
+    window.onload = () => {
+      getNetworkInfo();
+      startSpeedTest();
+    };
+  </script>
+    <script>
+        // Optional: Automatically retest every 15 seconds
+        setInterval(() => {
+        startSpeedTest();
+        getNetworkInfo();
+        }, 15000);
+    </script>
+
+    <div class="copyright">
+        <p>© 2025 Swadhin. All rights reserved.</p>
+    </div>
+</body>
+</html>
